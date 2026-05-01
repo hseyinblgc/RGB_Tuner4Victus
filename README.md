@@ -4,8 +4,8 @@ Control the keyboard RGB lighting on **HP Victus laptops** directly from Linux b
 
 This project was created after reverse-engineering how the lighting values are stored in EC memory. It allows you to change keyboard colors and run lighting effects without Windows or OMEN Gaming Hub.
 
-"there's a rust version of this project with more features and uses fewer resources, I would recommend that over this"
-rust version : [![My Project](https://raw.githubusercontent.com/you/repo/main/assets/logo.png)](https://github.com/najisheheem05/RGB_Tuner4Victus.git)
+there's a [![Rust version](https://raw.githubusercontent.com/you/repo/main/assets/logo.png)](https://github.com/najisheheem05/RGB_Tuner4Victus.git) of this project with more features and uses fewer resources, I would recommend that over this 
+
 ---
 
 ## Features
