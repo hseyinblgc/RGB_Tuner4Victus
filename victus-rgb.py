@@ -5,6 +5,7 @@ import sys
 import subprocess
 import time
 import colorsys
+import math
 
 EC_PATH = "/sys/kernel/debug/ec/ec0/io"
 OFFSET = 8
@@ -141,13 +142,15 @@ def breathe(color, speed=5):
     r, g, b = color
     h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
 
+    steps = 100
     while True:
-        for i in range(MIN_BRIGHTNESS, 101, 2):
-            write_rgb(*hsv_to_rgb(h, s, i / 100))
-            time.sleep(delay)
-
-        for i in range(100, MIN_BRIGHTNESS - 1, -2):
-            write_rgb(*hsv_to_rgb(h, s, i / 100))
+        for i in range(steps + 1):
+            # Half-wave sine curve from 0 -> 1 -> 0
+            phase = i / steps
+            brightness = math.sin(phase * math.pi)
+            # Scale between MIN_BRIGHTNESS and 1.0
+            scaled = (MIN_BRIGHTNESS / 100) + brightness * (1 - MIN_BRIGHTNESS / 100)
+            write_rgb(*hsv_to_rgb(h, s, scaled))
             time.sleep(delay)
 
 
