@@ -136,16 +136,17 @@ def rainbow(speed=5):
 def breathe(color, speed=5):
 
     delay = speed_delay(speed)
+    MIN_BRIGHTNESS: int = 10
 
     r, g, b = color
     h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
 
     while True:
-        for i in range(0, 101, 2):
+        for i in range(MIN_BRIGHTNESS, 101, 2):
             write_rgb(*hsv_to_rgb(h, s, i / 100))
             time.sleep(delay)
 
-        for i in range(100, -1, -2):
+        for i in range(100, MIN_BRIGHTNESS - 1, -2):
             write_rgb(*hsv_to_rgb(h, s, i / 100))
             time.sleep(delay)
 
