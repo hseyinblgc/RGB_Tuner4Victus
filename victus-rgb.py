@@ -227,28 +227,27 @@ def main():
     if len(args) == 1:
         arg = args[0].lower()
 
-        if arg == "current":
-            read_current()
-            return
+        match arg:
+            case "current":
+                read_current()
 
-        if arg == "stop":
-            kill_previous()
-            print("Effects stopped.")
-            return
+            case "stop":
+                kill_previous()
+                print("Effects stopped.")
 
-        if arg == "rainbow":
-            if not worker:
-                run_background()
+            case "rainbow":
+                if not worker:
+                    run_background()
+                rainbow()
 
-            rainbow()
-            return
+            case _ if arg in PRESET_COLORS:
+                kill_previous()
+                write_rgb(*PRESET_COLORS[arg])
 
-        if arg in PRESET_COLORS:
-            kill_previous()
-            write_rgb(*PRESET_COLORS[arg])
-            return
 
-        usage()
+            case _:
+                usage()
+
 
     elif len(args) == 2:
         if args[0] == "rainbow":
