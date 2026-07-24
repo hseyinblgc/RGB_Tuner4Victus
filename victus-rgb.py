@@ -1,11 +1,43 @@
 #!/usr/bin/env python3
 
-import os
-import sys
-import subprocess
-import time
+import argparse
 import colorsys
 import math
+import os
+import subprocess
+import sys
+import time
+
+parser = argparse.ArgumentParser(
+    prog="victus-rgb",
+    description="Control the keyboard RGB lighting on HP Victus laptops directly from Linux by writing RGB values to the Embedded Controller (EC).",
+)
+parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
+parser.add_argument("--speed", type=int, default=5, help="Adjust speed.")
+
+sub = parser.add_subparsers(dest="command", required=True)
+sub.add_parser("current", help="Show current color.")
+sub.add_parser("stop", help="Stop effects.")
+sub.add_parser("rainbow", help="Cycle through all colors smoothly.")
+
+set_preset = sub.add_parser("color", help="Preset colors.")
+set_preset.add_argument(
+    "value", nargs="+", help="Color preset or R G B value (255 0 0)."
+)
+
+p_breathe = sub.add_parser("breathe", help="Breathing effect.")
+p_breathe.add_argument("color")
+
+p_alt = sub.add_parser("alternate", help="Alternate between two colors.")
+p_alt.add_argument("c1")
+p_alt.add_argument("c2")
+
+p_fade = sub.add_parser("fade", help="Fade between two colors.")
+p_fade.add_argument("c1")
+p_fade.add_argument("c2")
+
+
+args = parser.parse_args()
 
 EC_PATH = "/sys/kernel/debug/ec/ec0/io"
 OFFSET = 8
@@ -105,9 +137,10 @@ def kill_previous():
 def run_background():
 
     kill_previous()
+    new_args = [sys.executable, sys.argv[0], "--worker"] + sys.argv[1:]
 
     subprocess.Popen(
-        [sys.executable] + sys.argv + ["--worker"],
+        new_args,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
@@ -220,142 +253,64 @@ def main():
     require_root()
     ensure_ec_access()
 
-    worker = "--worker" in sys.argv
+    worker = args.worker
 
-    args = [a for a in sys.argv[1:] if a != "--worker"]
+    match args.command:
+        case "current":
+            read_current()
 
-    if len(args) == 1:
-        arg = args[0].lower()
+        case "stop":
+            kill_previous()
+            print("Effects stopped.")
 
-        match arg:
-            case "current":
-                read_current()
+        case "rainbow":
+            if not worker:
+                run_background()
+            rainbow(args.speed)
 
-            case "stop":
+        case "breathe":
+            if args.color not in PRESET_COLORS:
+                usage()
+            if not worker:
+                run_background()
+            breathe(PRESET_COLORS[args.color], args.speed)
+
+        case "alternate":
+            if args.c1 not in PRESET_COLORS or args.c2 not in PRESET_COLORS:
+                usage()
+            if not worker:
+                run_background()
+            alternate(PRESET_COLORS[args.c1], PRESET_COLORS[args.c2], args.speed)
+
+        case "fade":
+            if args.c1 not in PRESET_COLORS or args.c2 not in PRESET_COLORS:
+                usage()
+            if not worker:
+                run_background()
+            fade(PRESET_COLORS[args.c1], PRESET_COLORS[args.c2], args.speed)
+
+        case "color":
+            if len(args.value) == 1 and args.value[0] in PRESET_COLORS:
                 kill_previous()
-                print("Effects stopped.")
+                write_rgb(*PRESET_COLORS[args.value[0]])
 
-            case "rainbow":
-                if not worker:
-                    run_background()
-                rainbow()
-
-            case _ if arg in PRESET_COLORS:
-                kill_previous()
-                write_rgb(*PRESET_COLORS[arg])
-
-
-            case _:
-                usage()
-
-
-    elif len(args) == 2:
-        if args[0] == "rainbow":
-            if not worker:
-                run_background()
-
-            rainbow(int(args[1]))
-            return
-
-        if args[0] == "breathe":
-            color = args[1]
-
-            if color not in PRESET_COLORS:
-                usage()
-
-            if not worker:
-                run_background()
-
-            breathe(PRESET_COLORS[color])
-            return
-
-        usage()
-
-    elif len(args) == 3:
-        if args[0] == "breathe":
-            color = args[1]
-            speed = int(args[2])
-
-            if color not in PRESET_COLORS:
-                usage()
-
-            if not worker:
-                run_background()
-
-            breathe(PRESET_COLORS[color], speed)
-            return
-
-        if args[0] == "alternate":
-            c1 = args[1]
-            c2 = args[2]
-
-            if c1 not in PRESET_COLORS or c2 not in PRESET_COLORS:
-                usage()
-
-            if not worker:
-                run_background()
-
-            alternate(PRESET_COLORS[c1], PRESET_COLORS[c2])
-            return
-
-        if args[0] == "fade":
-            c1 = args[1]
-            c2 = args[2]
-
-            if c1 not in PRESET_COLORS or c2 not in PRESET_COLORS:
-                usage()
-
-            if not worker:
-                run_background()
-
-            fade(PRESET_COLORS[c1], PRESET_COLORS[c2])
-            return
-
-        try:
-            r = int(args[0])
-            g = int(args[1])
-            b = int(args[2])
-
-        except:
+        case _:
             usage()
 
-        kill_previous()
-        write_rgb(r, g, b)
-        return
+    # Disabled for now. We will use argparse's nargs for this
+    # elif len(args) == 3:
 
-    elif len(args) == 4:
-        if args[0] == "alternate":
-            c1 = args[1]
-            c2 = args[2]
-            speed = int(args[3])
+    #     try:
+    #         r = int(args[0])
+    #         g = int(args[1])
+    #         b = int(args[2])
 
-            if c1 not in PRESET_COLORS or c2 not in PRESET_COLORS:
-                usage()
+    #     except:
+    #         usage()
 
-            if not worker:
-                run_background()
-
-            alternate(PRESET_COLORS[c1], PRESET_COLORS[c2], speed)
-            return
-
-        if args[0] == "fade":
-            c1 = args[1]
-            c2 = args[2]
-            speed = int(args[3])
-
-            if c1 not in PRESET_COLORS or c2 not in PRESET_COLORS:
-                usage()
-
-            if not worker:
-                run_background()
-
-            fade(PRESET_COLORS[c1], PRESET_COLORS[c2], speed)
-            return
-
-        usage()
-
-    else:
-        usage()
+    #     kill_previous()
+    #     write_rgb(r, g, b)
+    #     return
 
 
 if __name__ == "__main__":
