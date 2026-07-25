@@ -200,8 +200,8 @@ def breathe(color, speed=5):
     delay = speed_delay(speed)
     MIN_BRIGHTNESS: int = 10
 
-    r, g, b = color
-    h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+    r, g, b = color[0]
+    h, s, _ = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
 
     steps = 100
     while True:
