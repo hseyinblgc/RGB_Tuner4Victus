@@ -13,35 +13,38 @@ from src.ea_access import (
 from src.effects import alternate, breathe, fade, rainbow
 from src.helpers import kill_previous, list_colors, parse_color
 
-parser = argparse.ArgumentParser(
-    prog="victus-rgb",
-    description="Control the keyboard RGB lighting on HP Victus laptops directly from Linux by writing RGB values to the Embedded Controller (EC).",
-)
-parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
-parser.add_argument("--speed", type=int, default=5, help="Adjust speed.")
 
-sub = parser.add_subparsers(dest="command", required=True)
-sub.add_parser("list", help="List available color presets.")
-sub.add_parser("current", help="Show current color.")
-sub.add_parser("stop", help="Stop effects.")
-sub.add_parser("rainbow", help="Cycle through all colors smoothly.")
+def parse_args():
+    parser = argparse.ArgumentParser(
+        prog="victus-rgb",
+        description="Control the keyboard RGB lighting on HP Victus laptops directly from Linux by writing RGB values to the Embedded Controller (EC).",
+    )
+    parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--speed", type=int, default=5, help="Adjust speed.")
 
-set_preset = sub.add_parser("color", help="Preset colors.")
-set_preset.add_argument(
-    "value", nargs="+", help="Color preset or R G B value (255 0 0)."
-)
+    sub = parser.add_subparsers(dest="command", required=True)
+    sub.add_parser("list", help="List available color presets.")
+    sub.add_parser("current", help="Show current color.")
+    sub.add_parser("stop", help="Stop effects.")
+    sub.add_parser("rainbow", help="Cycle through all colors smoothly.")
 
-p_breathe = sub.add_parser("breathe", help="Breathing effect.")
-p_breathe.add_argument("color", nargs="+")
+    set_preset = sub.add_parser("color", help="Preset colors.")
+    set_preset.add_argument(
+        "value", nargs="+", help="Color preset or R G B value (255 0 0)."
+    )
 
-p_alt = sub.add_parser("alternate", help="Alternate between two colors.")
-p_alt.add_argument("color", nargs="+")
-# p_alt.add_argument("c2", nargs="+")
+    p_breathe = sub.add_parser("breathe", help="Breathing effect.")
+    p_breathe.add_argument("color", nargs="+")
 
-p_fade = sub.add_parser("fade", help="Fade between two colors.")
-p_fade.add_argument("color", nargs="+")
+    p_alt = sub.add_parser("alternate", help="Alternate between two colors.")
+    p_alt.add_argument("color", nargs="+")
+    # p_alt.add_argument("c2", nargs="+")
 
-args = parser.parse_args()
+    p_fade = sub.add_parser("fade", help="Fade between two colors.")
+    p_fade.add_argument("color", nargs="+")
+    return parser, parser.parse_args()
+
+
 
 # --------------------------
 # CLI
@@ -106,6 +109,7 @@ def main():
 
 
 if __name__ == "__main__":
+    parser, args = parse_args()
     try:
         main()
     except ValueError:
