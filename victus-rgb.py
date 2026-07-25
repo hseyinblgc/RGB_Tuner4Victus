@@ -11,7 +11,7 @@ from src.ea_access import (
     write_rgb,
 )
 from src.effects import alternate, breathe, fade, rainbow
-from src.helpers import kill_previous, parse_color
+from src.helpers import kill_previous, list_colors, parse_color
 
 parser = argparse.ArgumentParser(
     prog="victus-rgb",
@@ -99,14 +99,14 @@ def main():
             write_rgb(*c[0])
 
         case "list":
-            print("Available preset colors:")
-            for color_name in PRESET_COLORS:
-                print(f"  - {color_name}")
-            sys.exit(0)
+            list_colors()
 
         case _:
             usage()
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except ValueError:
+        usage()

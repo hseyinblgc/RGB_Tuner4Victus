@@ -35,7 +35,6 @@ def kill_previous():
     )
 
 
-
 PRESET_COLORS = {
     "red": (255, 0, 0),
     "green": (0, 255, 0),
@@ -49,6 +48,13 @@ PRESET_COLORS = {
     "flame": (255, 90, 0),
     "off": (0, 0, 0),
 }
+
+
+def list_colors() -> None:
+    print("Available preset colors:")
+    for color_name in PRESET_COLORS:
+        print(f"  - {color_name}")
+    sys.exit(0)
 
 
 def parse_color(values: list[str]) -> list[tuple]:
@@ -78,4 +84,3 @@ def parse_color(values: list[str]) -> list[tuple]:
         case _:
             raise ValueError("Invalid argument")
             sys.exit(1)
-
