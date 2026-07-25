@@ -5,7 +5,7 @@ import os
 import subprocess
 import sys
 
-from helpers import kill_previous
+from src.helpers import kill_previous
 
 EC_PATH = "/sys/kernel/debug/ec/ec0/io"
 OFFSET = 8
