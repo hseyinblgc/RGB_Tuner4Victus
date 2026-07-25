@@ -26,16 +26,14 @@ set_preset.add_argument(
 )
 
 p_breathe = sub.add_parser("breathe", help="Breathing effect.")
-p_breathe.add_argument("color")
+p_breathe.add_argument("color", nargs="+")
 
 p_alt = sub.add_parser("alternate", help="Alternate between two colors.")
-p_alt.add_argument("c1")
-p_alt.add_argument("c2")
+p_alt.add_argument("color", nargs="+")
+# p_alt.add_argument("c2", nargs="+")
 
 p_fade = sub.add_parser("fade", help="Fade between two colors.")
-p_fade.add_argument("c1")
-p_fade.add_argument("c2")
-
+p_fade.add_argument("color", nargs="+")
 
 args = parser.parse_args()
 
@@ -132,6 +130,34 @@ def kill_previous():
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
+
+
+def parse_color(values: list[str]) -> list[tuple]:
+    match values:
+        case [color] if color.lower() in PRESET_COLORS:
+            return [PRESET_COLORS[color.lower()]]
+
+        case [color1, color2] if (
+            color1.lower() in PRESET_COLORS and color2.lower() in PRESET_COLORS
+        ):
+            return [PRESET_COLORS[color1.lower()], PRESET_COLORS[color2.lower()]]
+
+        case [r, g, b]:
+            try:
+                return [(int(r), int(g), int(b))]
+            except ValueError:
+                print("RGB values must be integers")
+                sys.exit(1)
+
+        case [r1, g1, b1, r2, g2, b2]:
+            try:
+                return [(int(r1), int(g1), int(b1)), (int(r2), int(g2), int(b2))]
+            except ValueError:
+                print("RGB values must be integers")
+                sys.exit(1)
+
+        case _:
+            usage()
 
 
 def run_background():
@@ -269,48 +295,31 @@ def main():
             rainbow(args.speed)
 
         case "breathe":
-            if args.color not in PRESET_COLORS:
-                usage()
+            c = parse_color(args.color)
             if not worker:
                 run_background()
-            breathe(PRESET_COLORS[args.color], args.speed)
+            breathe(c, args.speed)
 
         case "alternate":
-            if args.c1 not in PRESET_COLORS or args.c2 not in PRESET_COLORS:
-                usage()
+            c1, c2 = parse_color(args.color)
+
             if not worker:
                 run_background()
-            alternate(PRESET_COLORS[args.c1], PRESET_COLORS[args.c2], args.speed)
+            alternate(c1, c2, args.speed)
 
         case "fade":
-            if args.c1 not in PRESET_COLORS or args.c2 not in PRESET_COLORS:
-                usage()
+            c1, c2 = parse_color(args.color)
+
             if not worker:
                 run_background()
-            fade(PRESET_COLORS[args.c1], PRESET_COLORS[args.c2], args.speed)
+            fade(c1, c2, args.speed)
 
         case "color":
-            if len(args.value) == 1 and args.value[0] in PRESET_COLORS:
-                kill_previous()
-                write_rgb(*PRESET_COLORS[args.value[0]])
-
+            c = parse_color(args.value)
+            kill_previous()
+            write_rgb(*c)
         case _:
             usage()
-
-    # Disabled for now. We will use argparse's nargs for this
-    # elif len(args) == 3:
-
-    #     try:
-    #         r = int(args[0])
-    #         g = int(args[1])
-    #         b = int(args[2])
-
-    #     except:
-    #         usage()
-
-    #     kill_previous()
-    #     write_rgb(r, g, b)
-    #     return
 
 
 if __name__ == "__main__":
