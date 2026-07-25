@@ -54,9 +54,6 @@ PRESET_COLORS = {
 }
 
 
-
-
-
 def parse_color(values: list[str]) -> list[tuple]:
     match values:
         case [color] if color.lower() in PRESET_COLORS:
@@ -83,22 +80,6 @@ def parse_color(values: list[str]) -> list[tuple]:
 
         case _:
             usage()
-
-
-def run_background():
-
-    kill_previous()
-    new_args = [sys.executable, sys.argv[0], "--worker"] + sys.argv[1:]
-
-    subprocess.Popen(
-        new_args,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-
-    print("Effect started in background.")
-    sys.exit(0)
-
 
 
 # --------------------------

@@ -5,6 +5,8 @@ import os
 import subprocess
 import sys
 
+from helpers import kill_previous
+
 EC_PATH = "/sys/kernel/debug/ec/ec0/io"
 OFFSET = 8
 
@@ -51,3 +53,18 @@ def read_current():
         r, g, b = f.read(3)
 
     print(f"Current RGB: {r} {g} {b}")
+
+
+def run_background():
+
+    kill_previous()
+    new_args = [sys.executable, sys.argv[0], "--worker"] + sys.argv[1:]
+
+    subprocess.Popen(
+        new_args,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+    print("Effect started in background.")
+    sys.exit(0)
