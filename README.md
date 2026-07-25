@@ -4,7 +4,7 @@ Control the keyboard RGB lighting on **HP Victus laptops** directly from Linux b
 
 This project was created after reverse-engineering how the lighting values are stored in EC memory. It allows you to change keyboard colors and run lighting effects without Windows or OMEN Gaming Hub.
 
-there's a [![Rust version](https://raw.githubusercontent.com/you/repo/main/assets/logo.png)](https://github.com/najisheheem05/RGB_Tuner4Victus.git) of this project with more features and uses fewer resources, I would recommend that over this 
+there's a [Rust version](https://github.com/najisheheem05/victus-tuner) of this project with more features and uses fewer resources, I would recommend that over this 
 
 ---
 
@@ -89,13 +89,13 @@ sudo mv victus-rgb.py /usr/local/bin/victus-rgb
 Then run commands like:
 
 ```bash
-sudo victus-rgb red
+sudo victus-rgb color red
 ```
 
 If running as python script
 
 ```bash
-sudo python victus-rgb.py red
+sudo python victus-rgb.py color red
 ```
 
 ---
@@ -104,20 +104,22 @@ sudo python victus-rgb.py red
 
 | Color       | Command                       |
 | ----------- | ----------------------------- |
-| red         | `sudo victus-rgb red`         |
-| green       | `sudo victus-rgb green`       |
-| blue        | `sudo victus-rgb blue`        |
-| yellow      | `sudo victus-rgb yellow`      |
-| cyan        | `sudo victus-rgb cyan`        |
-| purple      | `sudo victus-rgb purple`      |
-| neon-purple | `sudo victus-rgb neon-purple` |
-| white       | `sudo victus-rgb white`       |
-| off         | `sudo victus-rgb off`         |
+| red         | `sudo victus-rgb color red`         |
+| green       | `sudo victus-rgb color green`       |
+| blue        | `sudo victus-rgb color blue`        |
+| yellow      | `sudo victus-rgb color yellow`      |
+| cyan        | `sudo victus-rgb color cyan`        |
+| purple      | `sudo victus-rgb color purple`      |
+| neon-purple | `sudo victus-rgb color neon-purple` |
+| white       | `sudo victus-rgb color white`       |
+| off         | `sudo victus-rgb color off`         |
+| fire        | `sudo victus-rgb color fire`        |
+| flame       | `sudo victus-rgb color flame`       |
 
 Example:
 
 ```bash
-sudo victus-rgb neon-purple
+sudo victus-rgb color neon-purple
 ```
 
 ---
@@ -127,13 +129,13 @@ sudo victus-rgb neon-purple
 You can set any RGB color.
 
 ```
-sudo victus-rgb R G B
+sudo victus-rgb color R G B
 ```
 
 Example:
 
 ```bash
-sudo victus-rgb 120 40 255
+sudo victus-rgb color 120 40 255
 ```
 
 ---
@@ -173,7 +175,7 @@ sudo victus-rgb rainbow
 Adjust speed:
 
 ```bash
-sudo victus-rgb rainbow 8
+sudo victus-rgb --speed 8 rainbow
 ```
 
 ---
@@ -189,7 +191,7 @@ sudo victus-rgb breathe red
 Adjust speed:
 
 ```bash
-sudo victus-rgb breathe neon-purple 7
+sudo victus-rgb --speed 7 breathe neon-purple
 ```
 
 ---
@@ -205,7 +207,7 @@ sudo victus-rgb alternate red blue
 Adjust speed:
 
 ```bash
-sudo victus-rgb alternate red blue 8
+sudo victus-rgb --speed 8 alternate red blue
 ```
 
 ---
@@ -221,7 +223,7 @@ sudo victus-rgb fade red blue
 Adjust speed:
 
 ```bash
-sudo victus-rgb fade neon-purple cyan 7
+sudo victus-rgb --speed 8 fade neon-purple cyan
 ```
 
 ---
