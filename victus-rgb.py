@@ -318,7 +318,7 @@ def main():
         case "color":
             c = parse_color(args.value)
             kill_previous()
-            write_rgb(*c)
+            write_rgb(*c[0])
         case _:
             usage()
 
