@@ -16,6 +16,7 @@ parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
 parser.add_argument("--speed", type=int, default=5, help="Adjust speed.")
 
 sub = parser.add_subparsers(dest="command", required=True)
+sub.add_parser("list", help="List available color presets.")
 sub.add_parser("current", help="Show current color.")
 sub.add_parser("stop", help="Stop effects.")
 sub.add_parser("rainbow", help="Cycle through all colors smoothly.")
@@ -129,7 +130,7 @@ def kill_previous():
         ["pkill", "-f", "victus-rgb.*--worker"],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
-        check=False
+        check=False,
     )
 
 
@@ -307,6 +308,13 @@ def main():
             c = parse_color(args.value)
             kill_previous()
             write_rgb(*c[0])
+
+        case "list":
+            print("Available preset colors:")
+            for color_name in PRESET_COLORS:
+                print(f"  - {color_name}")
+            sys.exit(0)
+
         case _:
             usage()
 
