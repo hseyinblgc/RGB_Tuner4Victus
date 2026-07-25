@@ -129,6 +129,7 @@ def kill_previous():
         ["pkill", "-f", "victus-rgb.*--worker"],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
+        check=False
     )
 
 
