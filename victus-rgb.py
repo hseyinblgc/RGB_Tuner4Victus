@@ -45,15 +45,9 @@ def parse_args():
     return parser, parser.parse_args()
 
 
-
 # --------------------------
 # CLI
 # --------------------------
-
-
-def usage() -> None:
-    parser.print_help()
-    sys.exit(1)
 
 
 def main():
@@ -110,6 +104,11 @@ def main():
 
 if __name__ == "__main__":
     parser, args = parse_args()
+
+    def usage() -> None:
+        parser.print_help()
+        sys.exit(1)
+
     try:
         main()
     except ValueError:
