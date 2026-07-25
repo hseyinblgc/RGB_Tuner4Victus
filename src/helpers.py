@@ -76,5 +76,6 @@ def parse_color(values: list[str]) -> list[tuple]:
                 sys.exit(1)
 
         case _:
-            usage()
+            raise ValueError("Invalid argument")
+            sys.exit(1)
 
