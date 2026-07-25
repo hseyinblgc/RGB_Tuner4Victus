@@ -258,20 +258,8 @@ def fade(c1, c2, speed=5):
 # --------------------------
 
 
-def usage():
-
-    print("Usage:")
-    print("victus-rgb red")
-    print("victus-rgb 255 0 0")
-    print("victus-rgb current")
-    print("victus-rgb rainbow")
-    print("victus-rgb rainbow 8")
-    print("victus-rgb breathe red")
-    print("victus-rgb breathe red 7")
-    print("victus-rgb alternate red blue")
-    print("victus-rgb fade red blue")
-    print("victus-rgb stop")
-
+def usage() -> None:
+    parser.print_help()
     sys.exit(1)
 
 
