@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 
 import argparse
-import subprocess
 import sys
 
-from src.ea_access import ensure_ec_access, read_current, require_root, write_rgb
+from src.ea_access import (
+    ensure_ec_access,
+    read_current,
+    require_root,
+    run_background,
+    write_rgb,
+)
 from src.effects import alternate, breathe, fade, rainbow
 from src.helpers import kill_previous
 
