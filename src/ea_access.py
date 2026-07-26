@@ -56,9 +56,12 @@ def read_current():
 
 
 def run_background():
-
     kill_previous()
-    new_args = [sys.executable, sys.argv[0], "--worker"] + sys.argv[1:]
+
+    if getattr(sys, "frozen", False):
+        new_args = [sys.executable, "--worker"] + sys.argv[1:]
+    else:
+        new_args = [sys.executable, sys.argv[0], "--worker"] + sys.argv[1:]
 
     subprocess.Popen(
         new_args,
