@@ -56,7 +56,6 @@ The program writes RGB values directly to:
 ## Requirements
 
 - Linux
-- Python 3
 - Root access
 - `ec_sys` kernel module
 
@@ -66,24 +65,15 @@ The program automatically loads the module when needed.
 
 ## Installation
 
-Clone or download the repository.
+### Option 1: Download the precompiled binary (recommended)
 
-Enter to the directory
+No Python installation required — this is a standalone binary.
 
-```bash
-cd RGB-Tuner4Victus
-```
-
-Make the script executable:
+Download the latest release:
 
 ```bash
-chmod +x victus-rgb.py
-```
-
-Optional: install globally
-
-```bash
-sudo mv victus-rgb.py /usr/local/bin/victus-rgb
+sudo curl -L https://github.com/hseyinblgc/RGB_Tuner4Victus/releases/latest/download/victus-rgb -o /usr/local/bin/victus-rgb
+sudo chmod +x /usr/local/bin/victus-rgb
 ```
 
 Then run commands like:
@@ -92,7 +82,18 @@ Then run commands like:
 sudo victus-rgb color red
 ```
 
-If running as python script
+### Option 2: Run from source
+
+Requires Python 3.
+
+Clone the repository:
+
+```bash
+git clone https://github.com/hseyinblgc/RGB_Tuner4Victus.git
+cd RGB_Tuner4Victus
+```
+
+Run directly with Python:
 
 ```bash
 sudo python victus-rgb.py color red
