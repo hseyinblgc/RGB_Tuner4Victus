@@ -4,7 +4,7 @@
 import math
 import time
 
-from core import write_rgb
+from src.core import write_rgb
 from src.helpers import hsv_to_rgb, rgb_to_hsv, speed_delay
 
 

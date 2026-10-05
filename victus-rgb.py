@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-from core import (
+from src.core import (
     kill_previous,
     read_current,
     run_background,
