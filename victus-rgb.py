@@ -4,14 +4,13 @@ import argparse
 import sys
 
 from src.ea_access import (
-    ensure_ec_access,
+    kill_previous,
     read_current,
-    require_root,
     run_background,
     write_rgb,
 )
 from src.effects import alternate, breathe, fade, rainbow
-from src.helpers import kill_previous, list_colors, parse_color
+from src.helpers import list_colors, parse_color
 
 
 def parse_args():
@@ -50,10 +49,6 @@ def parse_args():
 
 
 def main():
-
-    require_root()
-    ensure_ec_access()
-
     worker = args.worker
 
     match args.command:

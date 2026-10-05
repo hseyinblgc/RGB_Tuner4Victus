@@ -2,7 +2,6 @@
 # HELPERS
 # --------------------------
 import colorsys
-import subprocess
 import sys
 
 
@@ -23,16 +22,6 @@ def hsv_to_rgb(h, s, v):
 def rgb_to_hsv(r, g, b):
     h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
     return h, s, v
-
-
-def kill_previous():
-
-    subprocess.run(
-        ["pkill", "-f", "victus-rgb.*--worker"],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=False,
-    )
 
 
 PRESET_COLORS = {

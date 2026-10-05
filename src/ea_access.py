@@ -6,8 +6,6 @@ import subprocess
 import sys
 from functools import wraps
 
-from src.helpers import kill_previous
-
 EC_PATH = "/sys/kernel/debug/ec/ec0/io"
 OFFSET = 8
 
@@ -42,6 +40,29 @@ def ensure_ec_access():
         sys.exit(1)
 
 
+def require_root():
+    if os.geteuid() != 0:
+        print("Run with sudo.")
+        sys.exit(1)
+
+
+# -------------------------------------
+# CORE
+# -------------------------------------
+
+
+@check_system
+def kill_previous():
+
+    subprocess.run(
+        ["pkill", "-f", "victus-rgb.*--worker"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+
+
+@check_system
 def read_current():
 
     with open(EC_PATH, "rb") as f:
@@ -51,12 +72,7 @@ def read_current():
     print(f"Current RGB: {r} {g} {b}")
 
 
-def require_root():
-    if os.geteuid() != 0:
-        print("Run with sudo.")
-        sys.exit(1)
-
-
+@check_system
 def run_background():
     kill_previous()
 
@@ -80,6 +96,7 @@ def run_background():
     sys.exit(0)
 
 
+@check_system
 def write_rgb(r, g, b):
 
     data = bytes([r, g, b])
