@@ -17,19 +17,14 @@ OFFSET = 8
 # --------------------------
 
 
-
 def check_system(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         require_root()
         ensure_ec_access()
         return func(*args, **kwargs)
-    return wrapper
 
-def require_root():
-    if os.geteuid() != 0:
-        print("Run with sudo.")
-        sys.exit(1)
+    return wrapper
 
 
 def ensure_ec_access():
@@ -47,15 +42,6 @@ def ensure_ec_access():
         sys.exit(1)
 
 
-def write_rgb(r, g, b):
-
-    data = bytes([r, g, b])
-
-    with open(EC_PATH, "r+b", buffering=0) as f:
-        f.seek(OFFSET)
-        f.write(data)
-
-
 def read_current():
 
     with open(EC_PATH, "rb") as f:
@@ -63,6 +49,12 @@ def read_current():
         r, g, b = f.read(3)
 
     print(f"Current RGB: {r} {g} {b}")
+
+
+def require_root():
+    if os.geteuid() != 0:
+        print("Run with sudo.")
+        sys.exit(1)
 
 
 def run_background():
@@ -76,10 +68,22 @@ def run_background():
 
     subprocess.Popen(
         new_args,
-        env={**os.environ, "PYINSTALLER_RESET_ENVIRONMENT": "1"}, # I googled for that xd
+        env={
+            **os.environ,
+            "PYINSTALLER_RESET_ENVIRONMENT": "1",
+        },  # I googled for that xd
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
 
     print("Effect started in background.")
     sys.exit(0)
+
+
+def write_rgb(r, g, b):
+
+    data = bytes([r, g, b])
+
+    with open(EC_PATH, "r+b", buffering=0) as f:
+        f.seek(OFFSET)
+        f.write(data)
