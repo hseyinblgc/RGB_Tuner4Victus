@@ -38,7 +38,6 @@ def parse_args():
 
     p_alt = sub.add_parser("alternate", help="Alternate between two colors.")
     p_alt.add_argument("color", nargs="+")
-    # p_alt.add_argument("c2", nargs="+")
 
     p_fade = sub.add_parser("fade", help="Fade between two colors.")
     p_fade.add_argument("color", nargs="+")
