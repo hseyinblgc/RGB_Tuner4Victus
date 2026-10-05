@@ -2,18 +2,55 @@
 
 import argparse
 import sys
+from enum import Enum
 
-from src.core import (
-    kill_previous,
-    read_current,
-    run_background,
-    write_rgb,
-)
+from src.core import kill_previous, read_current, run_background, write_rgb
 from src.effects import alternate, breathe, fade, rainbow
 from src.helpers import list_colors, parse_color
 
 
-def parse_args():
+class Command(str, Enum):
+    LIST = "list"
+    CURRENT = "current"
+    STOP = "stop"
+    RAINBOW = "rainbow"
+    COLOR = "color"
+    BREATHE = "breathe"
+    ALTERNATE = "alternate"
+    FADE = "fade"
+
+
+def launch(args, effect, *effect_args):
+    if not args.worker:
+        run_background()
+    effect(*effect_args, args.speed)
+
+
+def stop(_):
+    kill_previous()
+    print("Effects stopped.")
+
+
+def set_color(a):
+    c = parse_color(a.color)
+    kill_previous()
+    write_rgb(*c[0])
+
+
+# command -> (help text, takes color args?, handler)
+COMMANDS = {
+    Command.LIST: ("List available color presets.", False, lambda a: list_colors()),
+    Command.CURRENT: ("Show current color.", False, lambda a: read_current()),
+    Command.STOP: ("Stop effects.", False, stop),
+    Command.RAINBOW: ("Cycle through all colors smoothly.", False, lambda a: launch(a, rainbow)),
+    Command.COLOR: ("Preset colors.", True, set_color),
+    Command.BREATHE: ("Breathing effect.", True, lambda a: launch(a, breathe, parse_color(a.color))),
+    Command.ALTERNATE: ("Alternate between two colors.", True, lambda a: launch(a, alternate, *parse_color(a.color))),
+    Command.FADE: ("Fade between two colors.", True, lambda a: launch(a, fade, *parse_color(a.color))),
+}
+
+
+def build_parser():
     parser = argparse.ArgumentParser(
         prog="victus-rgb",
         description="Control the keyboard RGB lighting on HP Victus laptops directly from Linux by writing RGB values to the Embedded Controller (EC).",
@@ -22,88 +59,25 @@ def parse_args():
     parser.add_argument("--speed", type=int, default=5, help="Adjust speed.")
 
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser("list", help="List available color presets.")
-    sub.add_parser("current", help="Show current color.")
-    sub.add_parser("stop", help="Stop effects.")
-    sub.add_parser("rainbow", help="Cycle through all colors smoothly.")
 
-    set_preset = sub.add_parser("color", help="Preset colors.")
-    set_preset.add_argument(
-        "value", nargs="+", help="Color preset or R G B value (255 0 0)."
-    )
+    for cmd, (help_text, takes_color, handler) in COMMANDS.items():
+        p = sub.add_parser(cmd.value, help=help_text)
+        if takes_color:
+            p.add_argument("color", nargs="+", help="Color preset or R G B value (255 0 0).")
+        p.set_defaults(func=handler)
 
-    p_breathe = sub.add_parser("breathe", help="Breathing effect.")
-    p_breathe.add_argument("color", nargs="+")
-
-    p_alt = sub.add_parser("alternate", help="Alternate between two colors.")
-    p_alt.add_argument("color", nargs="+")
-
-    p_fade = sub.add_parser("fade", help="Fade between two colors.")
-    p_fade.add_argument("color", nargs="+")
-    return parser, parser.parse_args()
-
-
-# --------------------------
-# CLI
-# --------------------------
+    return parser
 
 
 def main():
-    worker = args.worker
-
-    match args.command:
-        case "current":
-            read_current()
-
-        case "stop":
-            kill_previous()
-            print("Effects stopped.")
-
-        case "rainbow":
-            if not worker:
-                run_background()
-            rainbow(args.speed)
-
-        case "breathe":
-            c = parse_color(args.color)
-            if not worker:
-                run_background()
-            breathe(c, args.speed)
-
-        case "alternate":
-            c1, c2 = parse_color(args.color)
-
-            if not worker:
-                run_background()
-            alternate(c1, c2, args.speed)
-
-        case "fade":
-            c1, c2 = parse_color(args.color)
-
-            if not worker:
-                run_background()
-            fade(c1, c2, args.speed)
-
-        case "color":
-            c = parse_color(args.value)
-            kill_previous()
-            write_rgb(*c[0])
-
-        case "list":
-            list_colors()
-
-        case _:
-            usage()
-
-
-if __name__ == "__main__":
-    parser, args = parse_args()
-
-    def usage() -> None:
+    parser = build_parser()
+    args = parser.parse_args()
+    try:
+        args.func(args)
+    except ValueError:
         parser.print_help()
         sys.exit(1)
 
-    try:
-        main()
-    except ValueError:
-        usage()
+
+if __name__ == "__main__":
+    main()
