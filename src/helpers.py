@@ -25,15 +25,24 @@ def rgb_to_hsv(r, g, b):
 
 
 PRESET_COLORS = {
-    "red": (255, 0, 0),
-    "green": (0, 255, 0),
+    "blood_orange": (180, 40, 0),
     "blue": (0, 0, 255),
-    "yellow": (255, 255, 0),
+    "charcoal": (54, 69, 79),
     "cyan": (0, 255, 255),
+    "cyber_violet": (74, 20, 140),
+    "dark_amber": (153, 101, 21),
+    "dark_slate": (47, 79, 79),
+    "deep_emerald": (9, 77, 44),
+    "eggplant": (75, 0, 130),
+    "forest_green": (34, 139, 34),
+    "green": (0, 255, 0),
+    "maroon": (128, 0, 0),
+    "midnight_blue": (25, 25, 112),
+    "neon_purple": (100, 12, 223),
     "purple": (255, 0, 255),
-    "neonpurple": (100, 12, 223),
-    "white": (255, 255, 255),
-    "fire": (255, 60, 0),
+    "red": (255, 0, 0),
+    "yellow": (255, 255, 0),
+    
 }
 
 
