@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-from src.ea_access import (
+from core import (
     kill_previous,
     read_current,
     run_background,
