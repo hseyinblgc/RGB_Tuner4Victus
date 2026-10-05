@@ -37,16 +37,16 @@ def set_color(a):
     write_rgb(*c[0])
 
 
-# command -> (help text, takes color args?, handler)
+# command -> (help text, nargs, handler)
 COMMANDS = {
-    Command.LIST: ("List available color presets.", False, lambda a: list_colors()),
-    Command.CURRENT: ("Show current color.", False, lambda a: read_current()),
-    Command.STOP: ("Stop effects.", False, stop),
-    Command.RAINBOW: ("Cycle through all colors smoothly.", False, lambda a: launch(a, rainbow)),
-    Command.COLOR: ("Preset colors.", True, set_color),
-    Command.BREATHE: ("Breathing effect.", True, lambda a: launch(a, breathe, parse_color(a.color))),
-    Command.ALTERNATE: ("Alternate between two colors.", True, lambda a: launch(a, alternate, *parse_color(a.color))),
-    Command.FADE: ("Fade between two colors.", True, lambda a: launch(a, fade, *parse_color(a.color))),
+    Command.LIST: ("List available color presets.", None, lambda a: list_colors()),
+    Command.CURRENT: ("Show current color.", None, lambda a: read_current()),
+    Command.STOP: ("Stop effects.", None, stop),
+    Command.RAINBOW: ("Cycle through all colors smoothly.", "+", lambda a: launch(a, rainbow)),
+    Command.COLOR: ("Preset colors.", "+", set_color),
+    Command.BREATHE: ("Breathing effect.", "+", lambda a: launch(a, breathe, parse_color(a.color))),
+    Command.ALTERNATE: ("Alternate between two colors.", "+", lambda a: launch(a, alternate, *parse_color(a.color))),
+    Command.FADE: ("Fade between two colors.", "+", lambda a: launch(a, fade, *parse_color(a.color))),
 }
 
 
@@ -60,10 +60,10 @@ def build_parser():
 
     sub = parser.add_subparsers(dest="command", required=True)
 
-    for cmd, (help_text, takes_color, handler) in COMMANDS.items():
+    for cmd, (help_text, nargs, handler) in COMMANDS.items():
         p = sub.add_parser(cmd.value, help=help_text)
-        if takes_color:
-            p.add_argument("color", nargs="+", help="Color preset or R G B value (255 0 0).")
+        if nargs is not None:
+            p.add_argument("color", nargs=nargs, help="Color preset or R G B value (255 0 0).")
         p.set_defaults(func=handler)
 
     return parser
