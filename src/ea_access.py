@@ -4,6 +4,7 @@
 import os
 import subprocess
 import sys
+from functools import wraps
 
 from src.helpers import kill_previous
 
@@ -15,6 +16,15 @@ OFFSET = 8
 # SYSTEM
 # --------------------------
 
+
+
+def check_system(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        require_root()
+        ensure_ec_access()
+        return func(*args, **kwargs)
+    return wrapper
 
 def require_root():
     if os.geteuid() != 0:
