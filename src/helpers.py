@@ -3,6 +3,7 @@
 # --------------------------
 import colorsys
 import sys
+from itertools import batched
 
 
 def speed_delay(speed: int) -> float:
@@ -42,7 +43,6 @@ PRESET_COLORS = {
     "purple": (255, 0, 255),
     "red": (255, 0, 0),
     "yellow": (255, 255, 0),
-    
 }
 
 
@@ -53,30 +53,23 @@ def list_colors() -> None:
     sys.exit(0)
 
 
-def parse_color(values: list[str]) -> list[tuple]:
-    match values:
-        case [color] if color.lower() in PRESET_COLORS:
-            return [PRESET_COLORS[color.lower()]]
+RGB = tuple[int, int, int]
 
-        case [color1, color2] if (
-            color1.lower() in PRESET_COLORS and color2.lower() in PRESET_COLORS
-        ):
-            return [PRESET_COLORS[color1.lower()], PRESET_COLORS[color2.lower()]]
 
-        case [r, g, b]:
-            try:
-                return [(int(r), int(g), int(b))]
-            except ValueError:
-                print("RGB values must be integers")
-                sys.exit(1)
+def parse_color(*args: str) -> list[RGB]:
+    rgb: list[RGB]
 
-        case [r1, g1, b1, r2, g2, b2]:
-            try:
-                return [(int(r1), int(g1), int(b1)), (int(r2), int(g2), int(b2))]
-            except ValueError:
-                print("RGB values must be integers")
-                sys.exit(1)
+    if len(args) not in (1, 2, 3, 6):
+        raise ValueError("Invalid argument")
 
-        case _:
-            raise ValueError("Invalid argument")
-            sys.exit(1)
+    try:
+        if len(args) in (1, 2):
+            rgb = [PRESET_COLORS[arg.lower()] for arg in args]
+        else:
+            rgb = [(r, g, b) for r, g, b in batched(map(int, args), 3)]
+    except KeyError as e:
+        raise ValueError(f"Unknown color: {e.args[0]}") from None
+    except ValueError:
+        raise ValueError("RGB values must be integers") from None
+
+    return rgb

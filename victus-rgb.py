@@ -32,7 +32,7 @@ def stop(_):
 
 
 def set_color(a):
-    c = parse_color(a.color)
+    c = parse_color(*a.color)
     kill_previous()
     write_rgb(*c[0])
 
@@ -42,11 +42,27 @@ COMMANDS = {
     Command.LIST: ("List available color presets.", None, lambda a: list_colors()),
     Command.CURRENT: ("Show current color.", None, lambda a: read_current()),
     Command.STOP: ("Stop effects.", None, stop),
-    Command.RAINBOW: ("Cycle through all colors smoothly.", "+", lambda a: launch(a, rainbow)),
+    Command.RAINBOW: (
+        "Cycle through all colors smoothly.",
+        None,
+        lambda a: launch(a, rainbow),
+    ),
     Command.COLOR: ("Preset colors.", "+", set_color),
-    Command.BREATHE: ("Breathing effect.", "+", lambda a: launch(a, breathe, parse_color(a.color))),
-    Command.ALTERNATE: ("Alternate between two colors.", "+", lambda a: launch(a, alternate, *parse_color(a.color))),
-    Command.FADE: ("Fade between two colors.", "+", lambda a: launch(a, fade, *parse_color(a.color))),
+    Command.BREATHE: (
+        "Breathing effect.",
+        "+",
+        lambda a: launch(a, breathe, parse_color(*a.color)),
+    ),
+    Command.ALTERNATE: (
+        "Alternate between two colors.",
+        "+",
+        lambda a: launch(a, alternate, *parse_color(*a.color)),
+    ),
+    Command.FADE: (
+        "Fade between two colors.",
+        "+",
+        lambda a: launch(a, fade, *parse_color(*a.color)),
+    ),
 }
 
 
@@ -63,7 +79,9 @@ def build_parser():
     for cmd, (help_text, nargs, handler) in COMMANDS.items():
         p = sub.add_parser(cmd.value, help=help_text)
         if nargs is not None:
-            p.add_argument("color", nargs=nargs, help="Color preset or R G B value (255 0 0).")
+            p.add_argument(
+                "color", nargs=nargs, help="Color preset or R G B value (255 0 0)."
+            )
         p.set_defaults(func=handler)
 
     return parser
